@@ -53,3 +53,43 @@ int pbo_mode_list_contents() {
     }
     return 0;
 }
+
+int pbo_mode_list_properties() {
+    int status;
+    
+    FILE * archive = fopen(archive_path, "rb");
+    if(!archive) {
+        errstr = archive_path;
+        return -1;
+    }
+
+    struct pbo_entry * list;
+    status = list_pbo_entries(archive, &list);
+    if(status != 0) {
+        int err = errno;
+        fclose(archive);
+        errno = err;
+        errstr = "error while reading archive";
+        return -1;
+    }
+
+    if(list == NULL || strlen(list->path) != 0) {
+        free_pbo_entries(list);
+        fclose(archive);
+        errno = 0;
+        errstr = "no properties defined";
+        return -1;
+    }
+
+    for(struct pbo_property * pro = list->properties; pro != NULL; pro = pro->next) {
+        printf("%s=%s\n", pro->key, pro->value);
+    }
+
+    free_pbo_entries(list);
+    status = fclose(archive);
+    if(status != 0) {
+        errstr = archive_path;
+        return -1;
+    }
+    return 0;
+}

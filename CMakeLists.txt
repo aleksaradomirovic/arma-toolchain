@@ -31,6 +31,7 @@ set_property(
 
 add_executable(
     pbo
+    pbo/extract.c
     pbo/list.c
     pbo/main.c
     pbo/pbo.c

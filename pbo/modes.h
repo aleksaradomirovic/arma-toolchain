@@ -23,3 +23,6 @@ extern const char * errstr;
 extern const char * archive_path;
 
 int pbo_mode_list_contents();
+int pbo_mode_list_properties();
+
+int pbo_mode_extract();

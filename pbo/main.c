@@ -27,7 +27,10 @@ const char * errstr = NULL;
 const char * archive_path = NULL;
 
 static const struct argp_option args_opts[] = {
-    { "list", 't', 0, 0, "list files in archive", 1 },
+    { "list"           , 't', 0,            0, "list files in archive"     , 1 },
+    { "list-files"     ,   0, 0, OPTION_ALIAS, NULL                        , 1 },
+    { "list-properties", 'p', 0,            0, "list properties of archive", 1 },
+    { "extract"        , 'x', 0,            0, "extract files in archive"  , 1 },
     
     { "file", 'f', "ARCHIVE", 0, "use archive file ARCHIVE", 2 },
 
@@ -46,6 +49,14 @@ static int args_parser(int key, char * arg, struct argp_state * state) {
         case 't': {
             if(mode_f != NULL) argp_error(state, "operating mode already set");
             else mode_f = pbo_mode_list_contents;
+        } break;
+        case 'p': {
+            if(mode_f != NULL) argp_error(state, "operating mode already set");
+            else mode_f = pbo_mode_list_properties;
+        } break;
+        case 'x': {
+            if(mode_f != NULL) argp_error(state, "operating mode already set");
+            else mode_f = pbo_mode_extract;
         } break;
         case 'f': {
             archive_path = arg;

@@ -72,16 +72,31 @@ static int read_string(FILE * f, char ** strptr) {
 }
 
 static int read_pbo_entry_fields(FILE * f, struct pbo_entry * ent) {
+    uint32_t properties[5];
+
     if(
         // fread(&(ent->mime_type)    , 4, 1, f) != 1 ||
         // fread(&(ent->original_size), 4, 1, f) != 1 ||
         // fread(&(ent->offset)       , 4, 1, f) != 1 ||
         // fread(&(ent->time_stamp)   , 4, 1, f) != 1 ||
         // fread(&(ent->data_size)    , 4, 1, f) != 1
-        fseek(f, 20, SEEK_CUR) != 0
+        // fseek(f, 20, SEEK_CUR) != 0
+        fread(properties, 4, 5, f) != 5
     ) {
         return -1;
     }
+
+#if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+    for(int i = 0; i < 5; i++) {
+        properties[i] = __builtin_bswap32(properties[i]);
+    }
+#endif
+
+    ent->mime_type = properties[0];
+    ent->original_size = properties[1];
+    ent->offset = properties[2];
+    ent->time_stamp = properties[3];
+    ent->data_size = properties[4];
 
     return 0;
 }
